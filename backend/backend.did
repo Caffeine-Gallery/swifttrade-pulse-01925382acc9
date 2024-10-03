@@ -1,0 +1,9 @@
+type SearchHistory = 
+ record {
+   symbol: text;
+   timestamp: int;
+ };
+service : {
+  addSearch: (text) -> ();
+  getSearchHistory: () -> (vec SearchHistory) query;
+}

@@ -67,3 +67,15 @@ h1 {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.error-message {
+    color: red;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.loading-indicator {
+    text-align: center;
+    margin: 10px 0;
+    display: none;
+}

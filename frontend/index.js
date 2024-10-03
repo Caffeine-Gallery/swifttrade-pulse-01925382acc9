@@ -4,6 +4,8 @@ const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 const toggleChartTypeButton = document.getElementById('toggle-chart-type');
 const chartCanvas = document.getElementById('stock-chart');
+const errorMessage = document.getElementById('error-message');
+const loadingIndicator = document.getElementById('loading-indicator');
 
 let chart;
 let chartType = 'line';
@@ -17,18 +19,30 @@ async function searchStock() {
     const symbol = searchInput.value.toUpperCase();
     if (!symbol) return;
 
+    errorMessage.textContent = '';
+    loadingIndicator.style.display = 'block';
+
     try {
         await backend.addSearch(symbol);
         const data = await fetchStockData(symbol);
         updateChart(data);
     } catch (error) {
         console.error('Error fetching stock data:', error);
+        errorMessage.textContent = error.message;
+    } finally {
+        loadingIndicator.style.display = 'none';
     }
 }
 
 async function fetchStockData(symbol) {
     const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`);
     const data = await response.json();
+    if (data['Error Message']) {
+        throw new Error(`API Error: ${data['Error Message']}`);
+    }
+    if (!data['Time Series (Daily)']) {
+        throw new Error('No daily time series data available for this symbol');
+    }
     return data['Time Series (Daily)'];
 }
 
